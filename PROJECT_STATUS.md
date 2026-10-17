@@ -1,0 +1,55 @@
+# PROJECT STATUS: SHADOW//PROTOCOL
+
+## Stage Tracking
+- [x] **Stage 0: Project Setup & Workspace Initialization**
+  - Configured Vite + Phaser 3 + Vitest.
+  - Verified bundle creation and basic scene pipeline.
+  - Initialized README and project tracker.
+- [x] **Stage 1: Playable Arena & Player Controls**
+  - 2.5D elevated grid environment with depth sorting based on ground plane coordinates.
+  - Smooth camera tracking with zoom and bounds.
+  - Left-click / tap destination indicator with animated tactical crosshair.
+  - Right-click and Escape key order cancellation.
+  - Walkable tile validation and collision boundaries.
+- [x] **Stage 2: Navigation & A* Pathfinding**
+  - Complete A* pathfinder supporting 8-directional movement with diagonal corner-cutting prevention.
+  - Safe fallback to nearest walkable tile when clicking unreachable walls.
+  - Automated tests validating obstacle navigation and corner safety.
+- [x] **Stage 3: Guard AI & Vision Occlusion**
+  - Multi-state finite state machine: `PATROL`, `SUSPICIOUS`, `INVESTIGATE`, `ALERT`, `ATTACK`, `SEARCH`, `RETURN`, `DEFEATED`.
+  - Raycasted vision cones dynamically blocked by walls and solid cover.
+  - Distance-weighted detection buildup meter (0% to 100%).
+  - Search sweep mode investigating last known player positions.
+  - Radio alert spreading to nearby guards within acoustic range.
+- [x] **Stage 4: Stealth Takedowns & Combat**
+  - Angle-checked backstab assassination system: approach guards from behind (outside FOV cone) within range.
+  - Visual takedown prompt (`[TAKEDOWN]`), dash strike animation, spark particles, and takedown SFX.
+  - Frontal approach triggers immediate guard alert and retaliation with attack telegraphs and damage.
+  - Operative health bar, damage flashing, screen shake, and retryable Mission Failed flow.
+  - Guard defeat cleanup: drops collectible credit chips, destroys vision cone, disables AI.
+- [x] **Stage 5: Signature Ability: Shadow Decoy**
+  - Tactical acoustic lure deployed at designated positions via `[SPACE]` or HUD button.
+  - Expanding holographic sonar rings with audio pulse.
+  - Lures active sentries within 280px radius into `INVESTIGATE` state.
+  - Automatic expiration with search fallback; tracked charges and cooldown.
+- [x] **Stage 6: Handcrafted Missions (1 to 5)**
+  - Mission 1: Sector Alpha - Training Facility (Movement, cones, and blind spot execution).
+  - Mission 2: Sector Beta - Transit Nexus (Intersecting crossfire patrol routes).
+  - Mission 3: Sector Gamma - Research Wing (Guarded corridor with tactical barrier cover).
+  - Mission 4: Sector Delta - Security Bastion (Choke points requiring Shadow Decoy distraction).
+  - Mission 5: Sector Omega - Central Data Core (High security vault with 5 enforcers and extraction core).
+- [x] **Stage 7: Progression, Menus & Local Storage**
+  - Main Menu, Mission Select, Operative Armory, Settings, In-game HUD, Pause Menu, Victory and Game Over screens.
+  - 3 Playable Operative Classes: Ghost (Balanced), Phantom (High-Agility), Wraith (Vanguard Heavy).
+  - Permanent Field Upgrades: Hyper-Sprint, Decoy Cells, Neural Disruptors.
+  - Persistent Local Storage save with corrupted data fallback recovery.
+  - Star ratings (1-3 stars), best completion times, and credit balance tracking.
+- [x] **Stage 8: Visual & Audio Polish**
+  - Procedural Web Audio synthesizer: zero external dependencies, takedown slashes, alert stings, credit pickups, ambient tactical drone.
+  - 2.5D architectural wall extrusions with top faces and shadow depth gradients.
+  - Soft ground contact drop-shadows beneath player, guards, and items.
+  - Cyberpunk surveillance HUD with active objectives, stealth meter, and integrity monitor.
+- [x] **Stage 9: Quality Assurance & Build Verification**
+  - 15/15 Vitest automated unit tests passing.
+  - Clean production build (`npm run build`) without errors.
+  - Verified static hosting readiness for Netlify, Vercel, or GitHub Pages.
