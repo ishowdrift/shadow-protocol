@@ -18,6 +18,11 @@ export class MainMenuScene extends Phaser.Scene {
     const height = this.scale.height;
     const saveData = SaveSystem.load();
 
+    // Sync audio settings from save
+    if (saveData.settings) {
+      soundManager.setMuted(!!saveData.settings.isMuted);
+    }
+
     // 1. Tactical Background with grid pattern
     const bg = this.add.graphics();
     bg.fillStyle(0x060a12, 1);
@@ -32,7 +37,10 @@ export class MainMenuScene extends Phaser.Scene {
       bg.beginPath(); bg.moveTo(0, y); bg.lineTo(width, y); bg.strokePath();
     }
 
-    // 2. Title Branding
+    // 2. Audio Toggle in Top Right
+    this.createAudioToggleButton(width - 110, 30);
+
+    // 3. Title Branding
     const title = this.add.text(width / 2, 140, 'SHADOW // PROTOCOL', {
       fontFamily: 'Chakra Petch, Rajdhani, monospace',
       fontSize: '44px',
@@ -57,36 +65,80 @@ export class MainMenuScene extends Phaser.Scene {
       padding: { x: 14, y: 6 }
     }).setOrigin(0.5);
 
-    // 3. Menu Buttons
+    // 4. Menu Buttons
     const startY = 290;
     const spacing = 55;
 
     this.createMenuButton(width / 2, startY, 'DEPLOY MISSION', 0x00f0ff, () => {
+      soundManager.resume();
       soundManager.playClick();
       this.scene.start('GameScene', { missionId: saveData.unlockedMissions || 1 });
     });
 
     this.createMenuButton(width / 2, startY + spacing, 'MISSION ARCHIVES', 0x38bdf8, () => {
+      soundManager.resume();
       soundManager.playClick();
       this.scene.start('MissionSelectScene');
     });
 
     this.createMenuButton(width / 2, startY + spacing * 2, 'OPERATIVE ARMORY & UPGRADES', 0xf59e0b, () => {
+      soundManager.resume();
       soundManager.playClick();
       this.scene.start('UpgradesScene');
     });
 
     this.createMenuButton(width / 2, startY + spacing * 3, 'SETTINGS & CONTROLS', 0x64748b, () => {
+      soundManager.resume();
       soundManager.playClick();
       this.scene.start('SettingsScene');
     });
 
-    // 4. Footer & Controls info
+    // 5. Footer & Controls info
     this.add.text(width / 2, height - 36, 'CONTROLS: Left-Click Move / Cancel with Right-Click | [SPACE] Takedown / Decoy | [ESC] Pause', {
       fontFamily: 'JetBrains Mono, monospace',
       fontSize: '11px',
       color: '#475569'
     }).setOrigin(0.5);
+  }
+
+  createAudioToggleButton(x, y) {
+    const btn = this.add.container(x, y);
+
+    const isMuted = soundManager.isMuted;
+    const bg = this.add.graphics();
+    bg.fillStyle(0x0e1b2d, 0.9);
+    bg.fillRoundedRect(-70, -14, 140, 28, 4);
+    bg.lineStyle(1.5, isMuted ? 0xef4444 : 0x00f0ff, 0.6);
+    bg.strokeRoundedRect(-70, -14, 140, 28, 4);
+    btn.add(bg);
+
+    const label = this.add.text(0, 0, isMuted ? '🔇 AUDIO: MUTED' : '🔊 AUDIO: ON', {
+      fontFamily: 'JetBrains Mono, monospace',
+      fontSize: '11px',
+      color: isMuted ? '#ef4444' : '#00f0ff'
+    }).setOrigin(0.5);
+    btn.add(label);
+
+    btn.setSize(140, 28);
+    btn.setInteractive({ useHandCursor: true });
+
+    btn.on('pointerdown', () => {
+      soundManager.resume();
+      const nextMuted = !soundManager.isMuted;
+      soundManager.setMuted(nextMuted);
+
+      const saveData = SaveSystem.load();
+      saveData.settings.isMuted = nextMuted;
+      SaveSystem.save(saveData);
+
+      if (!nextMuted) {
+        soundManager.playCredit();
+      }
+
+      this.scene.restart();
+    });
+
+    return btn;
   }
 
   createMenuButton(x, y, text, accentColor, callback) {
@@ -112,6 +164,7 @@ export class MainMenuScene extends Phaser.Scene {
     btn.setInteractive({ useHandCursor: true });
 
     btn.on('pointerover', () => {
+      soundManager.playTone(480, 0.04, 'sine', 0.15);
       bg.clear();
       bg.fillStyle(0x182c44, 1);
       bg.fillRoundedRect(-170, -20, 340, 40, 4);

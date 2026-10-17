@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { OPERATIVE_TYPES } from '../utils/Constants.js';
+import { soundManager } from '../systems/AudioSystem.js';
 
 export class Player extends Phaser.GameObjects.Container {
   /**
@@ -133,6 +134,9 @@ export class Player extends Phaser.GameObjects.Container {
     const vx = Math.cos(targetAngle) * this.speed;
     const vy = Math.sin(targetAngle) * this.speed;
     this.body.setVelocity(vx, vy);
+
+    // Play tactical footstep
+    soundManager.playFootstep();
   }
 
   takeDamage(amount) {

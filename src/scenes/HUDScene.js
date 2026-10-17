@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { soundManager } from '../systems/AudioSystem.js';
+import { SaveSystem } from '../systems/SaveSystem.js';
 
 export class HUDScene extends Phaser.Scene {
   constructor() {
@@ -73,10 +75,34 @@ export class HUDScene extends Phaser.Scene {
       color: '#ffb700'
     });
 
-    // 6. Pause Button (Far Right)
-    this.pauseBtn = this.add.text(width - 90, 14, '[PAUSE]', {
+    // 6. Audio Toggle Button & Pause Button (Far Right)
+    this.audioBtn = this.add.text(width - 180, 14, soundManager.isMuted ? '🔇 MUTE' : '🔊 AUDIO', {
       fontFamily: 'JetBrains Mono, monospace',
-      fontSize: '14px',
+      fontSize: '13px',
+      color: soundManager.isMuted ? '#ef4444' : '#00f0ff',
+      backgroundColor: 'rgba(0, 240, 255, 0.1)',
+      padding: { x: 8, y: 4 }
+    }).setInteractive({ useHandCursor: true });
+
+    this.audioBtn.on('pointerdown', () => {
+      soundManager.resume();
+      const nextMuted = !soundManager.isMuted;
+      soundManager.setMuted(nextMuted);
+      this.audioBtn.setText(nextMuted ? '🔇 MUTE' : '🔊 AUDIO');
+      this.audioBtn.setColor(nextMuted ? '#ef4444' : '#00f0ff');
+
+      const saveData = SaveSystem.load();
+      saveData.settings.isMuted = nextMuted;
+      SaveSystem.save(saveData);
+
+      if (!nextMuted) {
+        soundManager.playCredit();
+      }
+    });
+
+    this.pauseBtn = this.add.text(width - 80, 14, '[PAUSE]', {
+      fontFamily: 'JetBrains Mono, monospace',
+      fontSize: '13px',
       color: '#00f0ff',
       backgroundColor: 'rgba(0, 240, 255, 0.1)',
       padding: { x: 8, y: 4 }
